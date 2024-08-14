@@ -75,5 +75,7 @@ const core = new YasumuCore({
   fs: createAdapter(AdapterType.FileSystem, {}),
   path: createAdapter(AdapterType.Path, {}),
   process: createAdapter(AdapterType.Process, {}),
-  scripts: createAdapter(AdapterType.Scripts, {}),
+  scripts: {
+    async evaluate(script, contextData) {},
+  },
 });
