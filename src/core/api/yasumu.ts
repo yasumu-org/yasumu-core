@@ -9,20 +9,41 @@ import type {
   FileSystemCommon,
   PathCommon,
   CommandCommon,
-} from '../externals/types/index.js';
+  DialogCommon,
+  ProcessCommon,
+  ApplicationCommon,
+  EventsCommon,
+} from '../../externals/types/index.js';
+import type { FetchCommon } from '../../externals/types/fetch.js';
+import type { ScriptsCommon } from '@/scripts/types.js';
+import { YasumuScripts } from '@/scripts/YasumuScripts.js';
 
 export class YasumuCore {
+  public readonly scripts: YasumuScripts;
   public readonly store: StoreCommon;
   public readonly commands: CommandCommon;
   public readonly fs: FileSystemCommon;
   public readonly path: PathCommon;
+  public readonly fetch: FetchCommon;
+  public readonly dialog: DialogCommon;
+  public readonly process: ProcessCommon;
+  public readonly app: ApplicationCommon;
+  public readonly events: EventsCommon;
+  public readonly createStore: YasumuCreate<[string], StoreCommon>;
   public workspace: YasumuWorkspace | null = null;
 
   public constructor(config: YasumuCoreConfiguration) {
+    this.createStore = config.createStore;
     this.store = config.createStore(YasumuWorkspaceFiles.StorePath);
     this.commands = config.commands;
     this.fs = config.fs;
     this.path = config.path;
+    this.fetch = config.fetch;
+    this.dialog = config.dialog;
+    this.process = config.process;
+    this.app = config.app;
+    this.events = config.events;
+    this.scripts = new YasumuScripts(this, config.scripts);
   }
 
   public async restoreWorkspace() {
@@ -76,6 +97,12 @@ export interface YasumuCoreConfiguration {
   fs: FileSystemCommon;
   path: PathCommon;
   commands: CommandCommon;
+  fetch: FetchCommon;
+  dialog: DialogCommon;
+  process: ProcessCommon;
+  app: ApplicationCommon;
+  events: EventsCommon;
+  scripts: ScriptsCommon;
 }
 
 export function createYasumu(config: YasumuCoreConfiguration): YasumuCore {

@@ -1,12 +1,13 @@
 {
   "name": "@yasumu/core",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "Yasumu core api",
   "main": "./dist/index.js",
   "type": "module",
   "scripts": {
     "build": "rimraf dist && tsc",
-    "build:check": "tsc --noEmit"
+    "build:check": "tsc --noEmit",
+    "test": "tsx ./test/index.ts"
   },
   "repository": {
     "type": "git",

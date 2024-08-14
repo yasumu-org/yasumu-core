@@ -3,19 +3,31 @@ import type {
   FileSystemCommon,
   StoreCommon,
   CommandCommon,
+  DialogCommon,
+  ProcessCommon,
+  ApplicationCommon,
+  EventsCommon,
 } from './types/index.js';
 
 export type AdapterCommon =
   | PathCommon
   | FileSystemCommon
   | StoreCommon
-  | CommandCommon;
+  | CommandCommon
+  | DialogCommon
+  | ProcessCommon
+  | ApplicationCommon
+  | EventsCommon;
 
 export const AdapterType = {
   Path: 'path',
   FileSystem: 'fs',
   Store: 'store',
   Command: 'command',
+  Dialog: 'dialog',
+  Process: 'process',
+  Application: 'app',
+  Events: 'events',
 } as const;
 
 export type AdapterType = (typeof AdapterType)[keyof typeof AdapterType];
@@ -29,12 +41,28 @@ export type Config<ConfigType extends AdapterType> =
     ? StoreCommon
     : ConfigType extends (typeof AdapterType)['Command']
     ? CommandCommon
+    : ConfigType extends (typeof AdapterType)['Dialog']
+    ? DialogCommon
+    : ConfigType extends (typeof AdapterType)['Process']
+    ? ProcessCommon
+    : ConfigType extends (typeof AdapterType)['Application']
+    ? ApplicationCommon
+    : ConfigType extends (typeof AdapterType)['Events']
+    ? EventsCommon
     : never;
 
 export function createAdapter<ConfigType extends AdapterType>(
   type: ConfigType,
   config: Config<ConfigType>
 ): Config<ConfigType> {
+  if (!(type in AdapterType)) {
+    throw new Error(
+      `Invalid adapter type "${type}". Must be one of: ${Object.keys(
+        AdapterType
+      ).join(', ')}`
+    );
+  }
+
   for (const key in config) {
     if (config[key] === undefined) {
       throw new Error(`[${type}] Missing required config value: ${key}`);
@@ -42,22 +70,4 @@ export function createAdapter<ConfigType extends AdapterType>(
   }
 
   return config;
-}
-
-export function createPathAdapter(config: PathCommon): PathCommon {
-  return createAdapter(AdapterType.Path, config);
-}
-
-export function createFileSystemAdapter(
-  config: FileSystemCommon
-): FileSystemCommon {
-  return createAdapter(AdapterType.FileSystem, config);
-}
-
-export function createStoreAdapter(config: StoreCommon): StoreCommon {
-  return createAdapter(AdapterType.Store, config);
-}
-
-export function createCommandAdapter(config: CommandCommon): CommandCommon {
-  return createAdapter(AdapterType.Command, config);
 }

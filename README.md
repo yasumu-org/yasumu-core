@@ -20,5 +20,6 @@ const Yasumu = createYasumu({
   fs: resolveFsSomehow(),
   path: resolvePathSomehow(),
   commands: resolveCommandsSomehow(),
+  ...
 });
 ```
