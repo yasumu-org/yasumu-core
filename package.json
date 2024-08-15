@@ -1,12 +1,18 @@
 {
   "name": "@yasumu/core",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Yasumu core api",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "build": "rimraf dist && tsc",
+    "prepare": "yarn build",
+    "build": "rimraf dist && tsc && tsc-alias",
     "build:check": "tsc --noEmit",
     "test": "tsx ./test/index.ts"
   },
@@ -28,6 +34,7 @@
   "packageManager": "yarn@4.4.0",
   "devDependencies": {
     "rimraf": "^6.0.1",
+    "tsc-alias": "^1.8.10",
     "tsx": "^4.17.0",
     "typescript": "^5.5.4"
   }
