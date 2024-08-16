@@ -2,6 +2,7 @@ import { HttpMethods, isHttpMethod } from '@/core/common/constants.js';
 import { YasumuWorkspace } from '../../YasumuWorkspace.js';
 import { YasumuWorkspaceFiles } from '../../constants.js';
 import { YasumuRestEntity } from './YasumuRestEntity.js';
+import { YasumuRestImports } from './YasumuRestImports.js';
 
 export interface YasumuRestRequest {
   path: string;
@@ -17,12 +18,24 @@ export interface TreeViewElement {
 }
 
 export class YasumuRest {
+  public readonly imports = new YasumuRestImports(this);
+
+  /**
+   * Create a new YasumuRest instance
+   * @param workspace The parent YasumuWorkspace instance
+   */
   public constructor(public readonly workspace: YasumuWorkspace) {}
 
+  /**
+   * The path to the HTTP requests directory
+   */
   public getPath() {
     return this.workspace.resolvePath(YasumuWorkspaceFiles.Http);
   }
 
+  /**
+   * Ensure the workspace has the necessary directories for requests
+   */
   public async ensureSelf() {
     const path = this.getPath();
     const hasPath = await this.workspace.yasumu.fs.exists(path);
@@ -32,7 +45,24 @@ export class YasumuRest {
     }
   }
 
-  public async open(path: string) {
+  /**
+   * Open a request from the workspace
+   * @param path The path to the request
+   */
+  public async open(path: string): Promise<YasumuRestEntity>;
+  public async open(path: string, create: true): Promise<YasumuRestEntity>;
+  public async open(
+    path: string,
+    create: false
+  ): Promise<YasumuRestEntity | null>;
+  public async open(
+    path: string,
+    create: boolean
+  ): Promise<YasumuRestEntity | null>;
+  public async open(
+    path: string,
+    create = true
+  ): Promise<YasumuRestEntity | null> {
     await this.ensureSelf();
 
     const hasRequest = await this.workspace.yasumu.fs.exists(path);
@@ -44,6 +74,7 @@ export class YasumuRest {
     try {
       return new YasumuRestEntity(this, JSON.parse(data));
     } catch {
+      if (!create) return null;
       const id = await this.workspace.yasumu.path.basename(path);
       const name = (await YasumuRestEntity.getName(id)) ?? 'New request';
       const method = YasumuRestEntity.getMethod(id) ?? HttpMethods.GET;
@@ -64,6 +95,11 @@ export class YasumuRest {
     }
   }
 
+  /**
+   * Copy a request to a new location in the workspace
+   * @param current The current path of the request
+   * @param target The target path of the request
+   */
   public async copy(current: string, target: string) {
     await this.ensureSelf();
 
@@ -87,9 +123,21 @@ export class YasumuRest {
       target = await this.workspace.yasumu.path.join(target, currentName);
     }
 
+    const entity = await this.open(current, false);
+
+    if (entity) {
+      entity.setPath(target);
+      await entity.save();
+    }
+
     await this.workspace.yasumu.fs.copyFile(current, target);
   }
 
+  /**
+   * Move a request to a new location in the workspace
+   * @param current The current path of the request
+   * @param target The target path of the request
+   */
   public async move(current: string, target: string) {
     await this.ensureSelf();
 
@@ -113,9 +161,20 @@ export class YasumuRest {
       target = await this.workspace.yasumu.path.join(target, currentName);
     }
 
+    const entity = await this.open(current, false);
+
+    if (entity) {
+      entity.setPath(target);
+      await entity.save();
+    }
+
     await this.workspace.yasumu.fs.rename(current, target);
   }
 
+  /**
+   * Delete a request from the workspace
+   * @param path The path to the request
+   */
   public async delete(path: string) {
     await this.ensureSelf();
 
@@ -128,6 +187,12 @@ export class YasumuRest {
     });
   }
 
+  /**
+   * Rename a request in the workspace
+   * @param path The path to the request
+   * @param newName The new name of the request
+   * @param dir True if the path is a directory
+   */
   public async rename(path: string, newName: string, dir: boolean) {
     await this.ensureSelf();
 
@@ -153,9 +218,22 @@ export class YasumuRest {
       `${newName}${extension}`
     );
 
+    const entity = await this.open(path, false);
+
+    if (entity) {
+      entity.setPath(newPath);
+      await entity.save();
+    }
+
     await this.workspace.yasumu.fs.rename(path, newPath);
   }
 
+  /**
+   * Create a new request in the workspace
+   * @param name The name of the request
+   * @param method The HTTP method of the request
+   * @param basePath The base path to create the request in
+   */
   public async create(
     name: string,
     method: null,
@@ -199,6 +277,10 @@ export class YasumuRest {
     return entity;
   }
 
+  /**
+   * Get all requests in the workspace as a tree view
+   * @returns tree view data
+   */
   public async getAsTree(): Promise<TreeViewElement[]> {
     const requests = await this.getRequests();
 
@@ -222,6 +304,10 @@ export class YasumuRest {
     return data;
   }
 
+  /**
+   * Get all requests in the workspace
+   * @returns array of requests
+   */
   public async getRequests(): Promise<YasumuRestRequest[]> {
     const path = this.getPath();
     const hasRequests = await this.workspace.yasumu.fs.exists(path);

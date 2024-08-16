@@ -8,6 +8,7 @@ import type {
   ApplicationCommon,
   EventsCommon,
 } from './types/index.js';
+import type { ShellCommon } from './types/shell.js';
 
 export type AdapterCommon =
   | PathCommon
@@ -17,7 +18,8 @@ export type AdapterCommon =
   | DialogCommon
   | ProcessCommon
   | ApplicationCommon
-  | EventsCommon;
+  | EventsCommon
+  | ShellCommon;
 
 export const AdapterType = {
   Path: 'path',
@@ -28,6 +30,7 @@ export const AdapterType = {
   Process: 'process',
   Application: 'app',
   Events: 'events',
+  Shell: 'shell',
 } as const;
 
 export type AdapterType = (typeof AdapterType)[keyof typeof AdapterType];
@@ -49,6 +52,8 @@ export type Config<ConfigType extends AdapterType> =
     ? ApplicationCommon
     : ConfigType extends (typeof AdapterType)['Events']
     ? EventsCommon
+    : ConfigType extends (typeof AdapterType)['Shell']
+    ? ShellCommon
     : never;
 
 export function createAdapter<ConfigType extends AdapterType>(

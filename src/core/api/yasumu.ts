@@ -17,6 +17,7 @@ import type {
 import type { FetchCommon } from '../../externals/types/fetch.js';
 import type { ScriptsCommon } from '@/scripts/types.js';
 import { YasumuScripts } from '@/scripts/YasumuScripts.js';
+import type { ShellCommon } from '@/externals/types/shell.js';
 
 export class YasumuCore {
   public readonly scripts: YasumuScripts;
@@ -103,6 +104,7 @@ export interface YasumuCoreConfiguration {
   app: ApplicationCommon;
   events: EventsCommon;
   scripts: ScriptsCommon;
+  shell: ShellCommon;
 }
 
 export function createYasumu(config: YasumuCoreConfiguration): YasumuCore {

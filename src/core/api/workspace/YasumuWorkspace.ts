@@ -22,6 +22,11 @@ export class YasumuWorkspace {
   public readonly rest: YasumuRest;
   public readonly smtp: YasumuSmtp;
 
+  /**
+   * Create a new YasumuWorkspace
+   * @param yasumu The parent YasumuCore instance
+   * @param options The options for this workspace
+   */
   public constructor(
     public readonly yasumu: YasumuCore,
     private readonly options: YasumuWorkspaceInit
@@ -30,10 +35,16 @@ export class YasumuWorkspace {
     this.smtp = new YasumuSmtp(this);
   }
 
+  /**
+   * Retrieve the path of the workspace
+   */
   public getPath() {
     return this.options.path;
   }
 
+  /**
+   * Loads the necessary metadata for the workspace
+   */
   public async loadMetadata() {
     const path = YasumuWorkspace.resolvePath(
       this.yasumu,
@@ -64,6 +75,9 @@ export class YasumuWorkspace {
     await this.saveHistory();
   }
 
+  /**
+   * Write the metadata to the workspace
+   */
   public async writeMetadata() {
     const path = YasumuWorkspace.resolvePath(
       this.yasumu,
@@ -74,6 +88,9 @@ export class YasumuWorkspace {
     await this.yasumu.fs.writeTextFile(path, JSON.stringify(this.metadata));
   }
 
+  /**
+   * Save the workspace to the history
+   */
   public async saveHistory() {
     try {
       const history = await this.yasumu.getWorkspacesHistory();
@@ -99,16 +116,31 @@ export class YasumuWorkspace {
     }
   }
 
+  /**
+   * Create a new session for the workspace
+   */
   public async createSession() {
     const path = this.getPath();
 
     await this.yasumu.commands.invoke(Commands.SetCurrentWorkspace, { path });
   }
 
+  /**
+   * Resolve a path for a file in the workspace
+   * @param file The file to resolve
+   * @returns The resolved path
+   */
   public resolvePath(file: YasumuWorkspaceFiles) {
     return YasumuWorkspace.resolvePath(this.yasumu, this.options.path, file);
   }
 
+  /**
+   * Resolve a path for a file in the workspace
+   * @param yasumu The parent YasumuCore instance
+   * @param workspacePath The path to the workspace
+   * @param file The file to resolve
+   * @returns The resolved path
+   */
   public static resolvePath(
     yasumu: YasumuCore,
     workspacePath: string,
