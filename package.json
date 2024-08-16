@@ -37,8 +37,5 @@
     "tsc-alias": "^1.8.10",
     "tsx": "^4.17.0",
     "typescript": "^5.5.4"
-  },
-  "dependencies": {
-    "curlconverter": "^4.10.1"
   }
 }

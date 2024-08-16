@@ -1,6 +1,6 @@
-import { toJsonString } from 'curlconverter';
+import { parseCurl } from '@/utils/curlParser.js';
 import type { YasumuRest } from './YasumuRest.js';
-import type { KeyValue, YasumuRestEntity } from './YasumuRestEntity.js';
+import type { YasumuRestEntity } from './YasumuRestEntity.js';
 import type { HttpMethods } from '@/core/common/constants.js';
 
 export interface YasumuRestImportSource {
@@ -22,38 +22,24 @@ export class YasumuRestImports {
    * @param source The source to import.
    */
   public async curl(source: YasumuRestImportSource): Promise<YasumuRestEntity> {
-    const data = JSON.parse(toJsonString(source.source));
+    const data = parseCurl(source.source);
     const method = (
       'method' in data ? String(data.method).toUpperCase() : 'GET'
     ) as HttpMethods;
 
     const entity = await this.rest.create(source.name, method, source.path);
 
-    if ('raw_url' in data && data.raw_url) entity.setUrl(data.raw_url);
+    if (data.url) entity.setUrl(data.url);
 
-    if ('headers' in data && data.headers) {
-      const headers: Array<KeyValue<string, string>> = Object.entries(
-        data.headers
-      ).map(
-        ([key, value]) =>
-          ({
-            key,
-            value,
-          } as KeyValue<string, string>)
-      );
-
-      entity.setHeaders(headers);
+    if (data.headers.length) {
+      entity.setHeaders(data.headers);
     }
 
-    if ('data' in data && data.data) {
-      const body =
-        typeof data.data === 'string'
-          ? {
-              text: data.data,
-            }
-          : { json: JSON.stringify(data.data) };
-
-      entity.setBody(body);
+    if (data.body) {
+      entity.setBody({
+        text: data.body.text,
+        json: data.body.json,
+      });
     }
 
     await entity.save();
