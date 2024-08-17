@@ -1,7 +1,7 @@
 import type { Callback } from './common.js';
 
 export type InvokeArgs =
-  | Record<string, unknown>
+  | Record<string, any>
   | number[]
   | ArrayBuffer
   | Uint8Array;

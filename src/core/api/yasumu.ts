@@ -47,10 +47,12 @@ export class YasumuCore {
     this.scripts = new YasumuScripts(this, config.scripts);
   }
 
+  public async getCurrentWorkspacePath() {
+    return this.commands.invoke<string | null>(Commands.GetCurrentWorkspace);
+  }
+
   public async restoreWorkspace() {
-    const session = await this.commands.invoke<string | null>(
-      Commands.GetCurrentWorkspace
-    );
+    const session = await this.getCurrentWorkspacePath();
 
     if (session) {
       return this.openWorkspace(session);

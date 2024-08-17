@@ -6,7 +6,11 @@ import type { YasumuCore } from '../yasumu.js';
 import { YasumuRest } from './modules/rest/YasumuRest.js';
 import { YasumuSmtp } from './modules/smtp/YasumuSmtp.js';
 import { YasumuWorkspaceFiles } from './constants.js';
-import { Commands } from '@/core/common/commands.js';
+import {
+  Commands,
+  type CommandInvocation,
+  type CommandsInvocationMap,
+} from '@/core/common/commands.js';
 
 export interface YasumuWorkspaceInit {
   path: string;
@@ -122,7 +126,7 @@ export class YasumuWorkspace {
   public async createSession() {
     const path = this.getPath();
 
-    await this.yasumu.commands.invoke(Commands.SetCurrentWorkspace, { path });
+    await this.send(Commands.SetCurrentWorkspace, { path });
   }
 
   /**
@@ -132,6 +136,19 @@ export class YasumuWorkspace {
    */
   public resolvePath(file: YasumuWorkspaceFiles) {
     return YasumuWorkspace.resolvePath(this.yasumu, this.options.path, file);
+  }
+
+  /**
+   * Send a command to the workspace
+   * @param command The command to send
+   * @param data The data to send
+   * @returns The result of the command
+   */
+  public async send<
+    Cmd extends Commands,
+    InvocationData extends CommandsInvocationMap[Cmd]
+  >(command: Cmd, data: InvocationData[0]): Promise<InvocationData[1]> {
+    return this.yasumu.commands.invoke(command, data);
   }
 
   /**
