@@ -5,6 +5,7 @@ export const Commands = {
   // Workspace
   GetCurrentWorkspace: 'get_current_workspace',
   SetCurrentWorkspace: 'set_current_workspace',
+  ClearCurrentWorkspaceSession: 'clear_current_workspace_session',
   // Http
   GetLocalAddress: 'get_local_address',
   // Smtp
@@ -35,6 +36,7 @@ export interface CommandsInvocationMap {
     SetCurrentWorkspaceCommand,
     void
   >;
+  [Commands.ClearCurrentWorkspaceSession]: CommandInvocation<{}, void>;
   [Commands.GetLocalAddress]: CommandInvocation<{}, string>;
   [Commands.StartSmtpServer]: CommandInvocation<StartSmtpServerCommand, void>;
   [Commands.StopSmtpServer]: CommandInvocation<{}, void>;

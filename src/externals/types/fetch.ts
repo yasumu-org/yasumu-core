@@ -1,6 +1,9 @@
-import type { Callback } from './common.js';
+export type FetchAdditional<T> = T & {
+  maxRedirects?: number;
+  timeout?: number;
+};
 
-export type FetchCommon = Callback<
-  [RequestInfo, RequestInit],
-  Promise<Response>
->;
+export type FetchCommon = (
+  input: RequestInfo,
+  init?: FetchAdditional<RequestInit>
+) => Promise<Response>;

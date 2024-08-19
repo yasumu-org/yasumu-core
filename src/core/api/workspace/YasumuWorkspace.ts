@@ -130,6 +130,13 @@ export class YasumuWorkspace {
   }
 
   /**
+   * Clears the workspace session
+   */
+  public async destroySession() {
+    await this.send(Commands.ClearCurrentWorkspaceSession, {});
+  }
+
+  /**
    * Resolve a path for a file in the workspace
    * @param file The file to resolve
    * @returns The resolved path
