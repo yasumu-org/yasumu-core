@@ -30,6 +30,7 @@ export class YasumuCore {
   public readonly process: ProcessCommon;
   public readonly app: ApplicationCommon;
   public readonly events: EventsCommon;
+  public readonly shell: ShellCommon;
   public readonly createStore: YasumuCreate<[string], StoreCommon>;
   public workspace: YasumuWorkspace | null = null;
 
@@ -44,6 +45,7 @@ export class YasumuCore {
     this.process = config.process;
     this.app = config.app;
     this.events = config.events;
+    this.shell = config.shell;
     this.scripts = new YasumuScripts(this, config.scripts);
   }
 
