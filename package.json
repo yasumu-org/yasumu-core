@@ -1,6 +1,6 @@
 {
   "name": "@yasumu/core",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Yasumu core api",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "prepare": "yarn build",
+    "prepublishOnly": "yarn build",
     "build": "rimraf dist && tsc && tsc-alias",
     "build:check": "tsc --noEmit",
     "test": "tsx ./test/index.ts"
