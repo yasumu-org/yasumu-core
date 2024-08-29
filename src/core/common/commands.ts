@@ -53,7 +53,12 @@ export interface CommandsInvocationMap {
   // Smtp
   [Commands.StartSmtpServer]: CommandInvocation<StartSmtpServerCommand, void>;
   [Commands.StopSmtpServer]: CommandInvocation<{}, void>;
-  [Commands.GetEmails]: CommandInvocation<{}, YasumuMail[]>;
+  [Commands.GetEmails]: CommandInvocation<
+    {
+      read?: boolean;
+    },
+    YasumuMail[]
+  >;
   [Commands.ClearEmails]: CommandInvocation<{}, void>;
   [Commands.IsSmtpServerRunning]: CommandInvocation<{}, boolean>;
   [Commands.GetEmail]: CommandInvocation<{ id: string }, YasumuMail | null>;
