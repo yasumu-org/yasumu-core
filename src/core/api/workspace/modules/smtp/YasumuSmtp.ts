@@ -49,7 +49,10 @@ export class YasumuSmtp {
    */
   public async fetch(type?: YasumuEmailType) {
     return this.workspace.send(Commands.GetEmails, {
-      read: !type ? undefined : type === YasumuEmailType.Read,
+      read:
+        !type || type === YasumuEmailType.All
+          ? undefined
+          : type === YasumuEmailType.Read,
     });
   }
 
